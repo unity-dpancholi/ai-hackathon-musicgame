@@ -1,2 +1,2 @@
 # ai-hackathon-musicgame
-Music Game for CoCreate AI Hackathon (Think Trombone Champ)
+Music/Rhythm Game (Think Trombone Champ) for CoCreate AI Hackathon 
