@@ -9,6 +9,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.assistant-desktop": {
+      "version": "file:../../../Users/deeppancholi/AppData/Roaming/UnityHub/cocreate-bundled-packages/com.unity.assistant-desktop",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.burst": {
       "version": "1.8.29",
       "depth": 2,
