@@ -128,12 +128,12 @@ public class RhythmManager : MonoBehaviour
 
     private void HandlePlayerInput()
     {
-        // Register key down to handle one-time tap scoring and play error sounds
+        // Register key down to handle tap scoring and play error sounds on click mismatch
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             CheckHit(true);
         }
-        // Also support continuous hold notes/taps if player is actively holding and matching
+        // Also support continuous holding for hold notes if player is actively holding and matching
         else if (playerController.IsPlayingNote)
         {
             CheckHit(false);
@@ -156,9 +156,20 @@ public class RhythmManager : MonoBehaviour
 
             if (note.targetHole == playerHole && note.requiredState == playerState)
             {
+                // Target hit zone is at Y = -4.0f
                 float offset = Mathf.Abs(note.transform.position.y - (-4.0f));
-                if (offset <= 0.60f && offset < smallestOffset) // 0.60f is the OK Range
+                
+                // Max OK range is +/- 0.60 units offset
+                if (offset <= 0.60f && offset < smallestOffset)
                 {
+                    // If it is NOT the initial click (meaning player is holding RMB down),
+                    // only allow hitting hold notes (duration > 0). Tap notes (duration == 0)
+                    // MUST be cleared with an initial key down (GetKeyDown) to prevent cheesy holding.
+                    if (!isInitialClick && note.duration == 0f)
+                    {
+                        continue;
+                    }
+
                     smallestOffset = offset;
                     bestTarget = note;
                 }
@@ -178,7 +189,7 @@ public class RhythmManager : MonoBehaviour
         }
         else if (isInitialClick)
         {
-            // If the player clicked but didn't hit anything, play the mismatch rustle sound
+            // If the player clicked but didn't hit any valid note, play the mismatch rustle sound
             PlaySpitAirRustle();
         }
     }
