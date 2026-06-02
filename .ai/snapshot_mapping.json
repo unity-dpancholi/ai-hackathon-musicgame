@@ -1,0 +1,10 @@
+{
+  "mappings": [
+    {
+      "message_id": "20283d4d-7a11-4cd4-b7e4-3704c14b484a",
+      "conversation_id": "5df31629-0551-4156-860b-ed03973cfb68",
+      "content": "You are an expert Unity 2D game developer AI. Your task is to implement a rhythm music game in Unity based on the provided technical specification document: `GAME_DESCRIPTION.md`.\r\n\r\nPlease read the provided specification markdown file carefully. We will build this game step-by-step to ensure accuracy and clean code architecture.\r\n\r\nFor your FIRST step, look at \"Section 1: Project Architecture\" and \"Section 2: Core Coding Architecture\" in the document. Do not build everything at once. Please generate and provide only the following:\r\n\r\n1. An explanation of how you will configure the 2D Orthographic Camera and coordinate system in the Unity scene (including the 10 horizontal lanes).\r\n2. The complete, clean C# code for `PlayerController.cs` exactly as specified, ensuring it handles horizontal mouse movement, the Spacebar breath state toggle, and the normalized Oxygen level constraints.\r\n3. A brief explanation of how you plan to implement the `NoteObject.cs` component in the next step.\r\n\r\nConfirm you have read the specification file, explain your setup plan briefly, and output the C# code for `PlayerController.cs` to begin.",
+      "snapshot_message_type": "user"
+    }
+  ]
+}
