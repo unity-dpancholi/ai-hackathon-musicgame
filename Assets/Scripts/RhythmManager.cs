@@ -86,6 +86,9 @@ public class RhythmManager : MonoBehaviour
 
         // 2. Player Input / Hit Window logic
         HandlePlayerInput();
+
+        // 3. Song End Check
+        CheckSongEnd();
     }
 
     private void SpawnNotesInTimeline()
@@ -182,7 +185,7 @@ public class RhythmManager : MonoBehaviour
             bestTarget.IsCleared = true;
             activeNotes.Remove(bestTarget);
 
-            RegisterHitScore(smallestOffset);
+            RegisterHitScore(smallestOffset, bestTarget.transform.position.x);
 
             if (AudioManager.Instance != null)
             {
@@ -201,35 +204,53 @@ public class RhythmManager : MonoBehaviour
         }
     }
 
-    private void RegisterHitScore(float offset)
+    private int GetCurrentMultiplier()
     {
+        // 0-9: x1, 10-19: x2, 20-29: x3, 30+: x4
+        return Mathf.Clamp(1 + (combo / 10), 1, 4);
+    }
+
+    private void RegisterHitScore(float offset, float noteX)
+    {
+        int multiplier = GetCurrentMultiplier();
+        int earnedScore = 0;
+        string feedbackText = "OK!";
+        Color feedbackColor = Color.yellow;
+
         // Accuracy limits: Perfect (0.15), Good (0.35), OK (0.60)
         if (offset <= 0.15f)
         {
             perfectCount++;
-            score += 100;
+            earnedScore = 100 * multiplier;
             combo++;
-            Debug.Log("PERFECT! Offset: " + offset);
+            feedbackText = "PERFECT!";
+            feedbackColor = new Color(0.1f, 1f, 0.4f); // Neon green
         }
         else if (offset <= 0.35f)
         {
             goodCount++;
-            score += 50;
+            earnedScore = 50 * multiplier;
             combo++;
-            Debug.Log("GOOD! Offset: " + offset);
+            feedbackText = "GOOD!";
+            feedbackColor = new Color(0.1f, 0.7f, 1f); // Sky blue
         }
         else
         {
             okCount++;
-            score += 25;
+            earnedScore = 25 * multiplier;
             combo++;
-            Debug.Log("OK! Offset: " + offset);
+            feedbackText = "OK!";
+            feedbackColor = Color.yellow;
         }
+
+        score += earnedScore;
 
         if (combo > maxCombo)
         {
             maxCombo = combo;
         }
+
+        InstantiatePopup(noteX, $"{feedbackText}\n{(multiplier > 1 ? $"x{multiplier}" : "")}", feedbackColor);
     }
 
     private void HandleNoteMissed(NoteObject note)
@@ -241,6 +262,65 @@ public class RhythmManager : MonoBehaviour
 
         missCount++;
         combo = 0; // Reset combo on miss
+
+        InstantiatePopup(note.transform.position.x, "MISS!", Color.red);
         Debug.Log("MISS! Lane: " + note.targetHole);
+    }
+
+    private void InstantiatePopup(float xPos, string text, Color color)
+    {
+        GameObject popupObj = new GameObject("FeedbackPopup");
+        popupObj.transform.position = new Vector3(xPos, -3.2f, -1f);
+        
+        var popup = popupObj.AddComponent<FeedbackPopup>();
+        popup.Setup(text, color);
+    }
+
+    private void CheckSongEnd()
+    {
+        if (activeChart != null && nextNoteIndex >= activeChart.trackTimeline.Count && activeNotes.Count == 0)
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.EndGame();
+            }
+        }
+    }
+
+    public void StopSongGameplay()
+    {
+        isSongPlaying = false;
+        foreach (var note in activeNotes)
+        {
+            if (note != null)
+            {
+                note.IsCleared = true;
+                Destroy(note.gameObject);
+            }
+        }
+        activeNotes.Clear();
+    }
+
+    public float GetAccuracy()
+    {
+        int totalNotes = perfectCount + goodCount + okCount + missCount;
+        if (totalNotes == 0) return 0f;
+        
+        float earnedPoints = (perfectCount * 100f) + (goodCount * 50f) + (okCount * 25f);
+        float maxPoints = totalNotes * 100f;
+        return (earnedPoints / maxPoints) * 100f;
+    }
+
+    public string GetGrade()
+    {
+        float accuracy = GetAccuracy();
+        if (accuracy >= 98f) return "SSS";
+        if (accuracy >= 95f) return "SS";
+        if (accuracy >= 90f) return "S";
+        if (accuracy >= 80f) return "A";
+        if (accuracy >= 70f) return "B";
+        if (accuracy >= 60f) return "C";
+        if (accuracy >= 50f) return "D";
+        return "F";
     }
 }
