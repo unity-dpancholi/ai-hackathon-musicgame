@@ -30,9 +30,9 @@ public class PlayerController : MonoBehaviour
 
     public int GetCurrentHole()
     {
-        // Rounds X coordinate to determine nearest active lane index (1 to 10)
-        float roundedX = Mathf.Clamp(Mathf.Round(mouthReticle.position.x), minWorldX, maxWorldX);
-        return Mathf.RoundToInt(roundedX + 5.5f);
+        // Add 5.5f first to get the continuous lane index, then round to the nearest integer (1 to 10)
+        float continuousLane = mouthReticle.position.x + 5.5f;
+        return Mathf.Clamp(Mathf.RoundToInt(continuousLane), 1, 10);
     }
 
     void Update()
