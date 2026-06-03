@@ -11,11 +11,6 @@ public class RhythmManager : MonoBehaviour
     [SerializeField] private GameObject noteBlowPrefab; // Blue (Blow) note prefab
     [SerializeField] private GameObject noteDrawPrefab; // Amber (Draw) note prefab
 
-    [Header("Audio Settings")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip[] harmonicaNotes; // Index 0-9 for Holes 1-10
-    [SerializeField] private AudioClip spitAirRustle;    // Mismatched error sound
-
     [Header("Scoring & Combo")]
     [SerializeField] private int score = 0;
     [SerializeField] private int combo = 0;
@@ -73,6 +68,11 @@ public class RhythmManager : MonoBehaviour
         okCount = 0;
         missCount = 0;
         isSongPlaying = true;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusic();
+        }
     }
 
     private void Update()
@@ -183,14 +183,21 @@ public class RhythmManager : MonoBehaviour
             activeNotes.Remove(bestTarget);
 
             RegisterHitScore(smallestOffset);
-            PlayHarmonicaNote(playerHole - 1);
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayHarmonicaNote(playerHole - 1);
+            }
 
             Destroy(bestTarget.gameObject);
         }
         else if (isInitialClick)
         {
             // If the player clicked but didn't hit any valid note, play the mismatch rustle sound
-            PlaySpitAirRustle();
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayErrorSound();
+            }
         }
     }
 
@@ -235,25 +242,5 @@ public class RhythmManager : MonoBehaviour
         missCount++;
         combo = 0; // Reset combo on miss
         Debug.Log("MISS! Lane: " + note.targetHole);
-    }
-
-    private void PlayHarmonicaNote(int index)
-    {
-        if (audioSource == null) return;
-
-        if (harmonicaNotes != null && index >= 0 && index < harmonicaNotes.Length)
-        {
-            AudioClip clip = harmonicaNotes[index];
-            if (clip != null)
-            {
-                audioSource.PlayOneShot(clip);
-            }
-        }
-    }
-
-    private void PlaySpitAirRustle()
-    {
-        if (audioSource == null || spitAirRustle == null) return;
-        audioSource.PlayOneShot(spitAirRustle);
     }
 }
