@@ -24,6 +24,7 @@ public class RhythmManager : MonoBehaviour
     private int nextNoteIndex = 0;
     private float songTimer = 0f;
     private bool isSongPlaying = false;
+    private float currentLatencyOffset = 0f;
 
     // Public getters for UI
     public int Score => score;
@@ -44,6 +45,21 @@ public class RhythmManager : MonoBehaviour
     private void OnDisable()
     {
         NoteObject.OnAnyNoteMissed -= HandleNoteMissed;
+    }
+
+    private void Start()
+    {
+        // Automatically check if there is a persistent selected song chart and load it
+        if (PersistentDataManager.Instance != null)
+        {
+            if (PersistentDataManager.Instance.SelectedChart != null)
+            {
+                activeChart = PersistentDataManager.Instance.SelectedChart;
+                Debug.Log($"Loaded persistent chart: {activeChart.trackingTitle}");
+            }
+            currentLatencyOffset = PersistentDataManager.Instance.LatencyOffset;
+            Debug.Log($"Applied custom audio latency offset: {currentLatencyOffset * 1000f:F1}ms");
+        }
     }
 
     public void StartSong()
@@ -81,7 +97,7 @@ public class RhythmManager : MonoBehaviour
 
         songTimer += Time.deltaTime;
 
-        // 1. Spawning logic
+        // 1. Spawning logic with custom calibration delay shifts
         SpawnNotesInTimeline();
 
         // 2. Player Input / Hit Window logic
@@ -93,12 +109,22 @@ public class RhythmManager : MonoBehaviour
 
     private void SpawnNotesInTimeline()
     {
-        while (nextNoteIndex < activeChart.trackTimeline.Count &&
-               songTimer >= activeChart.trackTimeline[nextNoteIndex].spawnTimeOffset)
+        while (nextNoteIndex < activeChart.trackTimeline.Count)
         {
             NoteData noteData = activeChart.trackTimeline[nextNoteIndex];
-            SpawnNote(noteData);
-            nextNoteIndex++;
+            
+            // Adjust spawn time offset based on player latency calibration
+            float adjustedSpawnTime = noteData.spawnTimeOffset + currentLatencyOffset;
+
+            if (songTimer >= adjustedSpawnTime)
+            {
+                SpawnNote(noteData);
+                nextNoteIndex++;
+            }
+            else
+            {
+                break;
+            }
         }
     }
 
