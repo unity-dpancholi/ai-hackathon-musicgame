@@ -149,6 +149,12 @@
       "conversation_id": "5df31629-0551-4156-860b-ed03973cfb68",
       "content": "Looks like my main scene got deleted in one of the previous steps in this conversation, can you fix that and re-add it?",
       "snapshot_message_type": "user"
+    },
+    {
+      "message_id": "c62f7a4b-b1d2-4fcc-8385-958fa850bf65",
+      "conversation_id": "5df31629-0551-4156-860b-ed03973cfb68",
+      "content": "Looks like my main scene got deleted in one of the previous steps in this conversation or maybe a bug when I tried to use the checkpoint feature, can you fix that and re-add the MainScene?",
+      "snapshot_message_type": "user"
     }
   ]
 }
