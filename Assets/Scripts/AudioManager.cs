@@ -8,18 +8,10 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
 
-    [Header("Audio Clips - Blow Notes")]
-    [SerializeField] private AudioClip[] blowNotes = new AudioClip[10]; // Holes 1-10
-
-    [Header("Audio Clips - Draw Notes")]
-    [SerializeField] private AudioClip[] drawNotes = new AudioClip[10]; // Holes 1-10
-
-    [Header("Other Clips")]
+    [Header("Audio Clips")]
     [SerializeField] private AudioClip backgroundMusic;
+    [SerializeField] private AudioClip[] harmonicaNotes = new AudioClip[10]; // Indices 0-9 for Holes 1-10
     [SerializeField] private AudioClip spitAirRustle;                      // Error sound
-
-    // Keep legacy array for compatibility
-    [SerializeField] private AudioClip[] harmonicaNotes = new AudioClip[10];
 
     private void Awake()
     {
@@ -51,32 +43,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayHarmonicaNote(int index, PlayerController.BreathState state)
-    {
-        if (sfxSource == null) return;
-
-        AudioClip[] activeArray = (state == PlayerController.BreathState.Blow) ? blowNotes : drawNotes;
-
-        if (index >= 0 && index < activeArray.Length)
-        {
-            AudioClip clip = activeArray[index];
-            if (clip != null)
-            {
-                sfxSource.PlayOneShot(clip);
-            }
-        }
-        else if (index >= 0 && index < harmonicaNotes.Length)
-        {
-            // Fallback to legacy
-            AudioClip clip = harmonicaNotes[index];
-            if (clip != null)
-            {
-                sfxSource.PlayOneShot(clip);
-            }
-        }
-    }
-
-    // Overload for legacy compatibility
     public void PlayHarmonicaNote(int index)
     {
         if (sfxSource == null) return;
