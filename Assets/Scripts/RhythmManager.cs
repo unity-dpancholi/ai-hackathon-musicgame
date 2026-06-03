@@ -215,7 +215,7 @@ public class RhythmManager : MonoBehaviour
 
             if (AudioManager.Instance != null)
             {
-                AudioManager.Instance.PlayHarmonicaNote(playerHole - 1);
+                AudioManager.Instance.PlayNote(playerHole, playerState);
             }
 
             Destroy(bestTarget.gameObject);
@@ -225,7 +225,7 @@ public class RhythmManager : MonoBehaviour
             // If the player clicked but didn't hit any valid note, play the mismatch rustle sound
             if (AudioManager.Instance != null)
             {
-                AudioManager.Instance.PlayErrorSound();
+                AudioManager.Instance.PlayMiss();
             }
         }
     }
