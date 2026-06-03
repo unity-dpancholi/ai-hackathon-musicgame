@@ -215,7 +215,7 @@ public class RhythmManager : MonoBehaviour
 
             if (AudioManager.Instance != null)
             {
-                AudioManager.Instance.PlayHarmonicaNote(playerHole - 1);
+                AudioManager.Instance.PlayHarmonicaNote(playerHole - 1, playerState);
             }
 
             Destroy(bestTarget.gameObject);
