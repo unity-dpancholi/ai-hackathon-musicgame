@@ -81,13 +81,11 @@ public class HarmonicaSynth : MonoBehaviour
         int clampedHole = Mathf.Clamp(holeIndex - 1, 0, 9);
         targetFrequency = (state == PlayerController.BreathState.Blow) ? blowFrequencies[clampedHole] : drawFrequencies[clampedHole];
         targetEnvelope = 1f;
-        isPlaying = true;
     }
 
     public void StopNote()
     {
         targetEnvelope = 0f;
-        isPlaying = false;
     }
 
     private void Update()
