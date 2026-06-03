@@ -38,11 +38,47 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleStun();
-        if (isStunned) return;
+        if (isStunned)
+        {
+            if (HarmonicaSynth.Instance != null)
+            {
+                HarmonicaSynth.Instance.StopNote();
+            }
+            return;
+        }
 
         HandleMovement();
         HandleStateToggle();
         HandleOxygenMechanic();
+
+        HandleAudioSynth();
+    }
+
+    private void HandleAudioSynth()
+    {
+        if (IsPlayingNote)
+        {
+            int currentHole = GetCurrentHole();
+            if (HarmonicaSynth.Instance != null)
+            {
+                HarmonicaSynth.Instance.PlayNote(currentHole, currentBreathState);
+            }
+        }
+        else
+        {
+            if (HarmonicaSynth.Instance != null)
+            {
+                HarmonicaSynth.Instance.StopNote();
+            }
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (HarmonicaSynth.Instance != null)
+        {
+            HarmonicaSynth.Instance.StopNote();
+        }
     }
 
     private void HandleMovement()
